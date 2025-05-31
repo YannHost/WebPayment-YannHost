@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Payment QRIS</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      transition: all 0.25s ease;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: url('https://files.catbox.moe/o8xd5u.jpg') no-repeat center center fixed;
+      background-size: cover;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    .card {
+      background: rgba(255, 255, 255, 0.25);
+      backdrop-filter: blur(6px);
+      padding: 20px;
+      border-radius: 16px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+      max-width: 400px;
+      width: 100%;
+      text-align: center;
+    }
+
+    .title {
+      font-size: 20px;
+      font-weight: bold;
+      margin-bottom: 8px;
+      color: #fff;
+    }
+
+    .note {
+      font-size: 12px;
+      font-style: italic;
+      color: #fde68a;
+      margin-bottom: 12px;
+    }
+
+    .desc {
+      font-size: 14px;
+      color: #e0e0e0;
+      margin-bottom: 20px;
+    }
+
+    .qris-img {
+      width: 220px;
+      border-radius: 12px;
+      margin-bottom: 16px;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+
+    .pay-id {
+      background: rgba(255, 255, 255, 0.7);
+      padding: 10px 14px;
+      border-radius: 10px;
+      font-size: 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    .pay-id span {
+      font-weight: bold;
+      color: #111;
+    }
+
+    .copy-btn {
+      background: #3b82f6;
+      color: white;
+      border: none;
+      padding: 6px 10px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+    .copy-btn:hover {
+      background: #2563eb;
+    }
+
+    .merchant {
+      font-size: 14px;
+      color: #f3f4f6;
+      margin-bottom: 16px;
+    }
+
+    .btn {
+      display: block;
+      width: 100%;
+      margin: 8px 0;
+      padding: 12px;
+      border: none;
+      border-radius: 10px;
+      font-size: 16px;
+      cursor: pointer;
+      color: white;
+      text-decoration: none;
+    }
+
+    .btn-wa {
+      background: #25D366;
+    }
+
+    .btn-tg {
+      background: #0088cc;
+    }
+
+    .btn-channel {
+      background: #6366f1;
+    }
+
+    .timer {
+      font-size: 14px;
+      color: #fca5a5;
+      margin-top: 10px;
+    }
+
+    /* === Modal Style with Animation === */
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px) scale(0.9);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    @keyframes fadeOutDown {
+      from {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+      to {
+        opacity: 0;
+        transform: translateY(30px) scale(0.9);
+      }
+    }
+
+    .modal {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: fixed;
+      z-index: 999;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0,0,0,0.7);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+    }
+
+    .modal.show {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .modal-content {
+      margin: 10% auto;
+      display: block;
+      width: 90%;
+      max-width: 350px;
+      border-radius: 12px;
+      animation: fadeInUp 0.4s ease forwards;
+    }
+
+    .modal.hide .modal-content {
+      animation: fadeOutDown 0.3s ease forwards;
+    }
+
+    .close {
+      position: absolute;
+      top: 30px;
+      right: 40px;
+      font-size: 32px;
+      font-weight: bold;
+      color: white;
+      cursor: pointer;
+      z-index: 1000;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="title">Pembayaran via QRIS</div>
+    <div class="note">𝙈𝙊𝙃𝙊𝙉 𝙐𝙉𝙏𝙐𝙆 𝙎𝘾𝙍𝙀𝙀𝙉𝙎𝙃𝙊𝙏 𝘽𝙐𝙆𝙏𝙄 𝙏𝙍𝘼𝙉𝙎𝙁𝙀𝙍<br><i>𝘊𝘈𝘛𝘈𝘛𝘈𝘕: 𝘛𝘐𝘋𝘈𝘒 𝘈𝘋𝘈 𝘉𝘜𝘒𝘛𝘐 𝘛𝘙𝘈𝘕𝘚𝘍𝘌𝘙 = 𝘛𝘐𝘋𝘈𝘒 𝘈𝘒𝘈𝘕 𝘋𝘐 𝘗𝘙𝘖𝘚𝘌𝘚</i></div>
+    <div class="desc">Scan QR atau salin salah satu nomor di bawah</div>
+
+    <img src="https://files.catbox.moe/igiret.jpg" alt="QRIS" class="qris-img" id="qrisImg" />
+
+    <div class="pay-id">
+      <span>Dana: 087822561874</span>
+      <button class="copy-btn" onclick="copyText('087822561874')">Salin</button>
+    </div>
+
+    <div class="pay-id">
+      <span>GoPay: 087822561874</span>
+      <button class="copy-btn" onclick="copyText('087822561874')">Salin</button>
+    </div>
+
+    <div class="merchant"> </> A/N: raynn </> </div>
+
+    <a href="https://wa.me/6287822561874" target="_blank" class="btn btn-wa">Contact WhatsApp</a>
+    <a href="https://t.me/yanielleczf" target="_blank" class="btn btn-tg">Contact Telegram</a>
+    <a href="https://whatsapp.com/channel/0029VbAMJ0zBadmTkvk4K41F" target="_blank" class="btn btn-channel">Channel Testimoni</a>
+
+    <div class="timer" id="countdown">Sisa waktu: 15:00</div>
+  </div>
+
+  <div id="imgModal" class="modal">
+    <span class="close" onclick="closeModal()">&times;</span>
+    <img class="modal-content" id="modalImg" />
+  </div>
+
+  <script>
+    function copyText(text) {
+      const temp = document.createElement('input');
+      document.body.appendChild(temp);
+      temp.value = text;
+      temp.select();
+      document.execCommand('copy');
+      document.body.removeChild(temp);
+    }
+
+    let time = 15 * 60;
+    const countdownEl = document.getElementById('countdown');
+
+    const interval = setInterval(() => {
+      const minutes = Math.floor(time / 60);
+      const seconds = time % 60;
+      countdownEl.textContent = 'Sisa waktu: ' +
+        String(minutes).padStart(2, '0') + ':' +
+        String(seconds).padStart(2, '0');
+      time--;
+
+      if (time < 0) {
+        clearInterval(interval);
+        countdownEl.textContent = 'Waktu habis';
+      }
+    }, 1000);
+
+    const modal = document.getElementById('imgModal');
+    const modalImg = document.getElementById('modalImg');
+    const qrisImg = document.getElementById('qrisImg');
+
+    qrisImg.onclick = function () {
+      modal.classList.remove('hide');
+      modal.classList.add('show');
+      modalImg.src = this.src;
+    }
+
+    function closeModal() {
+      modal.classList.add('hide');
+      setTimeout(() => {
+        modal.classList.remove('show', 'hide');
+      }, 300);
+    }
+  </script>
+</body>
+</html>
